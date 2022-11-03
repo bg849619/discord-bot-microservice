@@ -49,7 +49,7 @@ app.post('/api/webhook', (req, res) => {
             }
 
             // Before dispatching to workers, respond with deferral message.
-            res.status(200).send(JSON.stringify({type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE}));
+            res.status(200).send({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE, data:{content: "Workers responding soon."}});
 
             // Dispatch certain number of commands.
             for(let i = 0; i < count; i++){
@@ -60,7 +60,7 @@ app.post('/api/webhook', (req, res) => {
         }
 
         // Defer response so command handler can respond.
-        res.status(200).send(JSON.stringify({type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE}));
+        res.status(200).send({type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
 
         // Add the command body to the RabbitMQ queue.
         return router.routeCommand(`command.${req.body.data.name}`, JSON.stringify(req.body));
@@ -111,4 +111,4 @@ amqp.connect(`amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${RABBITMQ_URL}`, (error0
             console.log('Listening');
         });
     });
-})
+});
