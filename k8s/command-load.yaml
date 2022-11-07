@@ -1,0 +1,51 @@
+# Deployment for the command service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: command-load
+  namespace: discord-microservice
+spec:
+  selector:
+    matchLabels:
+      app: command-load # Give the deployment some sort of label to keep track of the pods.
+  template:
+    metadata:
+      labels:
+        app: command-load # Matches the labels defined before.
+    spec: # Specifications for each pod.
+      containers:
+      - name: gateway # While a pod can contain multiple containers, we only use one.
+        image: 192.168.68.3/discord-command-load # This is pointing specifically to my local docker image regsitry.
+        imagePullPolicy: Always # Pull from the image registry every time a pod is created.
+        resources: # Set resource limits for the pod. In this case, 0.5 CPU cores and 128MB of RAM
+          limits:
+            memory: "128Mi" 
+            cpu: "500m"
+        env:
+          - name: BOT_TOKEN # Set an environment variable for the pod.
+            valueFrom:
+              secretKeyRef: # This pulls a value from a "Secret" resource.
+                key: token
+                name: bot-token
+                optional: false
+          - name: APPLICATION_ID
+            valueFrom:
+              secretKeyRef:
+                name: discord-application-id
+                key: app-id
+                optional: false
+          - name: RABBITMQ_URL
+            value: "interaction-broker" # You can also define the value directly.
+          - name: RABBITMQ_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: interaction-broker-default-user
+                optional: false
+          - name: RABBITMQ_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: interaction-broker-default-user
+                optional: false
+

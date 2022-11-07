@@ -1,0 +1,50 @@
+# Deployment for the gateway application. This pretty much matches the command-load deployment, with some different environment variables set.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: discord-microservice
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: 192.168.68.3/discord-gateway # This is pointing specifically to my local docker image regsitry.
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+          name: api-port
+        env:
+          - name: PORT
+            value: "80"
+          - name: CLIENT_PUB_KEY
+            valueFrom:
+              secretKeyRef:
+                name: discord-client
+                key: pubkey
+                optional: false
+          - name: RABBITMQ_URL
+            value: "interaction-broker"
+          - name: RABBITMQ_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: interaction-broker-default-user
+                optional: false
+          - name: RABBITMQ_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: interaction-broker-default-user
+                optional: false
+
