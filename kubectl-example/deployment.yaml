@@ -1,0 +1,27 @@
+# Here, we define a basic deployment.
+# All we're doing here is telling Kubernetes to
+# use the container image, "nginx", and to open 
+# port 80 on the container.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bg-demo
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: bg-demo
+  template:
+    metadata:
+      labels:
+        app: bg-demo
+    spec:
+      containers:
+      - name: bg-demo
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

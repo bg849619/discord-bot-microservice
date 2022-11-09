@@ -1,0 +1,20 @@
+# Even though we opened port 80 on the deployment earlier,
+# we want to create a single endpoint which can be used to
+# access whichever pods in the deployment are available.
+apiVersion: v1
+kind: Service
+metadata:
+  name: bg-demo
+spec:
+  selector:
+    app: bg-demo # This tells kubernetes to match any pods with the label: "app: bg-demo"
+  ports:
+  - port: 80
+
+# there are multiple types of services. By default, the
+# type is "ClusterIP", which is a virtual IP address only
+# available to applications internal to the cluster. There's
+# also "LoadBalancer", which creates an external IP to access
+# the service. Since my cluster is on bare-metal, instead of 
+# in the cloud, there's some special stuff I do to expose
+# my cluster to the internet, using an Ingress Controller (Traefik)

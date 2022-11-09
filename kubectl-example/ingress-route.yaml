@@ -1,0 +1,22 @@
+# An IngressRoute is not a default Kubernetes resource type.
+# Applications can extend Kubernetes by defining new types,
+# and defining what other resources are created to support
+# / control the new type.
+# Traefik uses IngressRoutes to know what service to send
+# requests to, based off routing rules.
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bg-demo-ir
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`bg-demo.jbg.codes`)
+    services:
+    - kind: Service
+      name: bg-demo
+      namespace: default
+      port: 80
