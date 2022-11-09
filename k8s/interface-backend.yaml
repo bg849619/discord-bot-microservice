@@ -1,0 +1,22 @@
+# You can also manually create a pod without all of the deployment extras. However, we lose scalability.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: interface-backend
+  namespace: discord-microservice
+  labels:
+    name: interface-backend
+spec:
+  serviceAccountName: interface-backend
+  containers:
+  - name: interface-backend
+    image: 192.168.68.3/discord-interface-backend
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+    env:
+    - name: K8S_NAMESPACE
+      value: "discord-microservice"
